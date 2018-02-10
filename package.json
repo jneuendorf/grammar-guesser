@@ -1,0 +1,31 @@
+{
+    "name": "grammar-guesser",
+    "version": "0.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "babel src --out-dir dist --source-maps --ignore spec.js,test.js",
+        "rollup": "rollup --config",
+        "run": "yarn run rollup && node dist/bundle.js",
+        "debug": "yarn run rollup && node --inspect-brk dist/bundle.js"
+    },
+    "repository": "https://github.com/jneuendorf/grammar-guesser.git",
+    "author": "Jim Neuendorf <jim.neuendorf@gmx.de>",
+    "license": "MIT",
+    "dependencies": {
+        "ebnf": "^1.5.0",
+        "lodash.flatten": "^4.4.0",
+        "lodash.uniq": "^4.5.0",
+        "rollup": "^0.55.3"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-core": "^6.26.0",
+        "babel-eslint": "^8.2.1",
+        "babel-preset-env": "^1.6.1",
+        "babel-preset-stage-0": "^6.24.1",
+        "eslint": "^4.16.0",
+        "eslint-plugin-import": "^2.8.0",
+        "rollup-plugin-commonjs": "^8.3.0",
+        "rollup-plugin-node-resolve": "^3.0.2"
+    }
+}
