@@ -40,13 +40,14 @@ while (parent && parent.end === cursorPos) {
     parent = parent.parent
 }
 
-// console.log(util.inspect(parser.grammarRules, {showHidden: false, depth: null}))
-console.log(util.inspect(nodesEndingAtCursorPos, {showHidden: false, depth: 3}))
+// console.log(util.inspect(nodesEndingAtCursorPos, {showHidden: false, depth: 3}))
 
 const grammarRules = {}
 for (const {name, bnf} of parser.grammarRules) {
     grammarRules[name] = bnf
 }
+// console.log('')
+// console.log(util.inspect(grammarRules, {showHidden: false, depth: null}))
 
 // Enable O(1) lookup for potential parents (O(1) requires dictionaries => immutable!).
 const parentsByRule = {}
@@ -119,7 +120,7 @@ const getMatchingRules = node => {
 //     console.log(getMatchingRules(node))
 // }
 
-const getPossibilities = node => {
+const getPossibleNextRules = node => {
     const {type} = node
     const matchingRules = getMatchingRules(node)
     const possibilities = (
@@ -131,14 +132,46 @@ const getPossibilities = node => {
 }
 console.log('')
 // for (const node of nodesEndingAtCursorPos) {
-//     console.log(getPossibilities(node))
+//     console.log(getPossibleNextRules(node))
 // }
 const possibilities = unique(flatten(
-    nodesEndingAtCursorPos.map(node => getPossibilities(node))
+    nodesEndingAtCursorPos.map(node => getPossibleNextRules(node))
 ))
 console.log(possibilities)
 
 
+const getTerminalSymbols = rule => {
+    // TODO: use Set
+    const visitedRules = []
+    const rec = rule => {
+        if (visitedRules.indexOf(rule) >= 0) {
+            // non-terminal => don't add it to the result
+            if (rule in grammarRules) {
+                return []
+            }
+            return [rule]
+        }
+
+        visitedRules.push(rule)
+
+        if (rule in grammarRules) {
+            return flatten(
+                grammarRules[rule].map(
+                    symbols => flatten(symbols.map(symbol => rec(symbol)))
+                )
+            )
+        }
+        else {
+            return [rule]
+        }
+    }
+    return unique(rec(rule)).map(terminalSymbol => eval(terminalSymbol))
+}
+
+console.log('')
+for (const rule of possibilities) {
+    console.log(getTerminalSymbols(rule))
+}
 
 //
 // // console.log(parser.getAST(' '))
